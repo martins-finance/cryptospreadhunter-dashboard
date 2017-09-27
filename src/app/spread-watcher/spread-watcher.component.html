@@ -1,0 +1,28 @@
+<div align="center">
+	<div>
+		<label>Currency: </label>
+		<select class="form-control" id="currency" [(ngModel)]="currency" required>
+			<option *ngFor="let cur of currencies" [value]="cur">{{cur}}</option>
+		</select>
+	</div>
+	<div>
+		<table [cellPadding]="5" [cellSpacing]="2" [border]="1">
+			<tr>
+				<th>base</th>
+				<th>origin</th>
+				<th>destiny</th>
+				<th>originAmount</th>
+				<th>destinyAmount</th>
+				<th>spread</th>
+			</tr>
+			<tr *ngFor="let tradeOption of tradeOptions">
+				<td>{{tradeOption.base}}</td>
+				<td>{{tradeOption.origin}}</td>
+				<td>{{tradeOption.destiny}}</td>
+				<td>{{tradeOption.originAmount}}</td>
+				<td>{{tradeOption.destinyAmount}}</td>
+				<td [style.background-color]="tradeOption.spread < 0 ? 'red' : 'green'">{{tradeOption.spread}}</td>
+			</tr>
+		</table>
+	</div>
+</div>

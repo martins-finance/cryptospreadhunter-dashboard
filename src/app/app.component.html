@@ -4,13 +4,4 @@
     {{title}}
   </h1>
 </div>
-<div align="center">
-	<table [cellPadding]="5" [cellSpacing]="2" [border]="1">
-		<tr>
-			<th>id</th><th>exchange</th><th>operation</th><th>currency</th><th>base</th><th>amount</th><th>time</th>
-		</tr>
-		<tr *ngFor="let price of prices">
-			<td>{{price.id}}</td><td>{{price.exchange}}</td><td>{{price.operation}}</td><td>{{price.currency}}</td><td>{{price.base}}</td><td>{{price.amount}}</td><td>{{price.time}}</td>
-		</tr>
-	</table>
-</div>
+<app-spread-watcher></app-spread-watcher>

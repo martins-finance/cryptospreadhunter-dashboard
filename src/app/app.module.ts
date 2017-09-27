@@ -1,9 +1,12 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 
 import { StompConfig, StompService } from '@stomp/ng2-stompjs';
 
 import { AppComponent } from './app.component';
+import { SpreadWatcherComponent } from './spread-watcher/spread-watcher.component';
+import { KeysPipe } from './keys.pipe';
 
 const stompConfig: StompConfig = {
   // Which server?
@@ -32,10 +35,13 @@ const stompConfig: StompConfig = {
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    SpreadWatcherComponent,
+    KeysPipe
   ],
   imports: [
-    BrowserModule
+    BrowserModule,
+    FormsModule
   ],
   providers: [
     StompService,
