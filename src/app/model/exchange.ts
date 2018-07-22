@@ -1,3 +1,3 @@
 export enum Exchange {
-  GEMINI, COINBASE
+  GEMINI, COINBASE, POLONIEX, CEXIO
 }

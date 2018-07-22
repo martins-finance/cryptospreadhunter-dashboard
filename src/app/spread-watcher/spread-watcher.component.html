@@ -21,7 +21,7 @@
 				<td>{{tradeOption.destiny}}</td>
 				<td>{{tradeOption.originAmount}}</td>
 				<td>{{tradeOption.destinyAmount}}</td>
-				<td [style.background-color]="tradeOption.spread < 0 ? 'red' : 'green'">{{tradeOption.spread}}</td>
+				<td [style.background-color]="tradeOption.spread > 0 ? 'green' : 'white'">{{tradeOption.spread}}</td>
 			</tr>
 		</table>
 	</div>

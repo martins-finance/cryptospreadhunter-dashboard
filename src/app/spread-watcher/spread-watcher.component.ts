@@ -8,7 +8,6 @@ import { Price } from '../model/price';
 import { Exchange } from '../model/exchange';
 import { Operation } from '../model/operation';
 import { Currency } from '../model/currency';
-import { Base } from '../model/base';
 
 import { TradeOption } from './trade-option';
 
@@ -21,10 +20,11 @@ import { TradeOption } from './trade-option';
 export class SpreadWatcherComponent implements OnInit, OnDestroy {
   public currency: string = Currency[Currency.USD];
   private currencies: Currency[] =  Object.values(Currency).slice(0, Object.values(Currency).length / 2);
+  private exchanges: string[] =  Object.values(Exchange).slice(0, Object.values(Exchange).length / 2);
+  private bases: string[] =  Object.values(Currency).slice(0, Object.values(Currency).length / 2);
 
   public tradeOptions: TradeOption[];
-  public tradeOptionsOriginIndex: Map<string, TradeOption>;
-  public tradeOptionsDestinyIndex: Map<string, TradeOption>;
+  public tradeOptionsIndex: Map<string, TradeOption>;
 
   public pricesMap: Map<string, number>;
 
@@ -38,15 +38,12 @@ export class SpreadWatcherComponent implements OnInit, OnDestroy {
   constructor(private _stompService: StompService) {
     this.pricesMap = new Map<string, number>();
     this.tradeOptions = [];
-    this.tradeOptionsOriginIndex = new Map<string, TradeOption>();
-    this.tradeOptionsDestinyIndex = new Map<string, TradeOption>();
+    this.tradeOptionsIndex = new Map<string, TradeOption>();
 
-    const exchanges: string[] =  Object.values(Exchange).slice(0, Object.values(Exchange).length / 2);
-    const bases: string[] =  Object.values(Base).slice(0, Object.values(Base).length / 2);
-    for (const _origin of exchanges) {
-      for (const _destiny of exchanges) {
+    for (const _origin of this.exchanges) {
+      for (const _destiny of this.exchanges) {
         if (_origin !== _destiny) {
-          for (const _base of bases) {
+          for (const _base of this.bases) {
             const tradeOption: TradeOption = {
               base: _base,
               origin: _origin,
@@ -56,8 +53,7 @@ export class SpreadWatcherComponent implements OnInit, OnDestroy {
               spread: 0
             };
             this.tradeOptions.push(tradeOption);
-            this.tradeOptionsOriginIndex.set(_base + _origin, tradeOption);
-            this.tradeOptionsDestinyIndex.set(_base + _destiny, tradeOption);
+            this.tradeOptionsIndex.set(_base + _origin + _destiny, tradeOption);
           }
         }
       }
@@ -109,13 +105,21 @@ export class SpreadWatcherComponent implements OnInit, OnDestroy {
     const price: Price = JSON.parse(message.body);
     console.log(price);
     if (price.operation.toString() === Operation[Operation.BUY]) {
-      const originTradeOption: TradeOption = this.tradeOptionsOriginIndex.get(price.base.toString() + price.exchange.toString());
-      originTradeOption.originAmount = price.amount;
-      originTradeOption.spread = originTradeOption.destinyAmount - originTradeOption.originAmount;
+      for (const _destiny of this.exchanges) {
+        const tradeOption: TradeOption = this.tradeOptionsIndex.get(price.base.toString() + price.exchange.toString() + _destiny);
+        if (tradeOption !== undefined) {
+          tradeOption.originAmount = price.amount;
+          tradeOption.spread = tradeOption.destinyAmount - tradeOption.originAmount;
+        }
+      }
     } else {
-      const destinyTradeOption: TradeOption = this.tradeOptionsDestinyIndex.get(price.base.toString() + price.exchange.toString());
-      destinyTradeOption.destinyAmount = price.amount;
-      destinyTradeOption.spread = destinyTradeOption.destinyAmount - destinyTradeOption.originAmount;
+      for (const _origin of this.exchanges) {
+        const tradeOption: TradeOption = this.tradeOptionsIndex.get(price.base.toString() + _origin + price.exchange.toString());
+        if (tradeOption !== undefined) {
+          tradeOption.destinyAmount = price.amount;
+          tradeOption.spread = tradeOption.destinyAmount - tradeOption.originAmount;
+        }
+      }
     }
   }
 }
